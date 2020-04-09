@@ -3,9 +3,10 @@ import { Guild } from "../data/entities/guild"
 import { Message, User, StreamDispatcher, Channel, VoiceChannel, TextChannel } from "discord.js"
 import ytdl from 'ytdl-core'
 import {SongInfo, getCurrentPlayer} from '../player'
+import search from "../services/search"
 
 export default class PlayCommand extends Command {
-  static trigger = /^play (\S+)$/
+  static trigger = /^play (.*)$/
 
   async handle() {
     if (!this.channelCheck() || !this.permissionsCheck()) {
@@ -13,7 +14,16 @@ export default class PlayCommand extends Command {
     }
 
     try {
-      const info = await this.getSong(this.args[0])
+      let info: SongInfo
+      if (this.args[0].startsWith('http')) {
+        info = await this.getSong(this.args[0])
+      } else {
+        const results = await search(this.args[0])
+        info = {
+          url: results.results[0].url,
+          title: results.results[0].title,
+        }
+      }
       const player = await getCurrentPlayer(this.guild.id)
       player.once('added', () => {
         this.message.channel.send(player.isPlaying ? `added ${info.title} to the queue` : `playing ${info.title}`)

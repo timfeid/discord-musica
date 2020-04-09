@@ -34,7 +34,7 @@ export class Player extends EventEmitter {
   createDispatcher (connection: VoiceConnection, song: PlaySong) {
     const dispatcher = connection.play(ytdl(song.info.url))
 
-    dispatcher.on('finish', this.skip)
+    dispatcher.on('finish', () => this.skip())
 
     return dispatcher
   }
