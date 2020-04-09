@@ -1,2 +1,3 @@
 dist/
+data/database.sqlite
 .env
