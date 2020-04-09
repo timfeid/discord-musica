@@ -1,7 +1,7 @@
 import { Command } from "./command"
 import { Guild } from "../data/entities/guild"
 import { Message } from "discord.js"
-import { getCurrentDispatcher } from "./play"
+import { getCurrentPlayer } from "../player"
 
 export default class VolumeCommand extends Command {
   static trigger = /^volume (1?[0-9]{1,2})$/
@@ -17,9 +17,7 @@ export default class VolumeCommand extends Command {
     this.guild.volume = volume
     await this.guild.save()
 
-    const dispatcher = getCurrentDispatcher()
-    if (dispatcher) {
-      dispatcher.setVolumeLogarithmic(volume / 100)
-    }
+    const player = await getCurrentPlayer(this.guild.id)
+    player.setVolume(volume)
   }
 }
