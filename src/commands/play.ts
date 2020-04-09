@@ -15,7 +15,7 @@ export default class PlayCommand extends Command {
 
     try {
       let info: SongInfo
-      if (this.args[0].startsWith('http')) {
+      if (this.args[0].startsWith('http') || (/^[A-Za-z0-9_-]{11}$/).test(this.args[0])) {
         info = await this.getSong(this.args[0])
       } else {
         const results = await search(this.args[0])
