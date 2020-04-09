@@ -1,0 +1,18 @@
+{
+  "files.exclude": {
+    ".vscode": true,
+    "**/.git": true, // this is a default value
+    "**/.DS_Store": true, // this is a default value
+    "**/dist": true, // this is a default value
+    "**/node_modules": true, // this excludes all folders
+    "**/coverage/": true,
+    "**/.nyc_output/": true
+  },
+  "advancedNewFile.exclude": {
+    "node_modules": true,
+    "node_modules_electron": true,
+    "dist": true,
+    "**/vendor": true
+  },
+  "svg.preview.background": "white",
+}
