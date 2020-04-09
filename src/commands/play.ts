@@ -1,12 +1,24 @@
 import { Command } from "./command"
 import { Guild } from "../data/entities/guild"
-import { Message, User, StreamDispatcher } from "discord.js"
+import { Message, User, StreamDispatcher, Channel, VoiceChannel, TextChannel } from "discord.js"
 import ytdl from 'ytdl-core'
 
-let currentDispatcher: StreamDispatcher
+interface SongInfo {
+  title: string
+  url: string
+}
 
-export function getCurrentDispatcher() {
-  return currentDispatcher
+interface PlaySong {
+  voiceChannel: VoiceChannel
+  textChannel: TextChannel
+  song: SongInfo
+}
+
+let queue: Record<number, PlaySong[]> = {}
+let currentDispatcher: Record<number, StreamDispatcher> = {}
+
+export function getCurrentDispatcher(guildId: number) {
+  return currentDispatcher[guildId]
 }
 
 export default class PlayCommand extends Command {
@@ -19,18 +31,54 @@ export default class PlayCommand extends Command {
 
     try {
       const song = await this.getSong(this.args[0])
-      const channelConnection = await this.voiceChannel!.join()
-      currentDispatcher = channelConnection.play(ytdl(song.url))
-      currentDispatcher.on('start', () => console.log('we started?'))
-      currentDispatcher.on('error', err => this.message.channel.send(err.message))
-      currentDispatcher.on('finish', () => this.message.channel.send('done'))
-      currentDispatcher.setVolumeLogarithmic(this.guild.volume / 100)
+      this.addToQueue({
+        voiceChannel: this.voiceChannel as VoiceChannel,
+        textChannel: this.message.channel as TextChannel,
+        song,
+      })
+
+      if (!currentDispatcher[this.guild.id]) {
+        this.play()
+      } else {
+        this.message.channel.send(`added ${song.title} to the mixxxx`)
+      }
     } catch (e) {
       this.message.channel.send(e.message)
     }
   }
 
-  async getSong (url: string) {
+  addToQueue(playSong: PlaySong) {
+    if (!queue[this.guild.id]) {
+      queue[this.guild.id] = []
+    }
+
+    queue[this.guild.id].push(playSong)
+  }
+
+  nextSong() {
+    if (!queue[this.guild.id]) {
+      return
+    }
+
+    return queue[this.guild.id].shift()
+  }
+
+  async play () {
+    const nextSong = this.nextSong()
+    if (nextSong) {
+      const channelConnection = await this.voiceChannel!.join()
+      currentDispatcher[this.guild.id] = channelConnection.play(ytdl(nextSong.song.url))
+      currentDispatcher[this.guild.id].on('start', () => console.log('we started?'))
+      currentDispatcher[this.guild.id].on('error', e => console.log(e))
+      currentDispatcher[this.guild.id].on('finish', () => {
+        delete currentDispatcher[this.guild.id]
+        this.play()
+      })
+      currentDispatcher[this.guild.id].setVolumeLogarithmic(this.guild.volume / 100)
+    }
+  }
+
+  async getSong (url: string): Promise<SongInfo> {
     const songInfo = await ytdl.getInfo(url)
     return {
       title: songInfo.title,
