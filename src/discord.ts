@@ -7,12 +7,14 @@ import PlayCommand from './commands/play'
 import CommandsService from './services/commands'
 import VolumeCommand from './commands/volume'
 import SkipCommand from './commands/skip'
+import QueueCommand from './commands/queue'
 
 const commands: typeof Command[] = [
   TestCommand,
   PlayCommand,
   VolumeCommand,
   SkipCommand,
+  QueueCommand,
 ]
 const bot = new Client()
 

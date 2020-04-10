@@ -16,7 +16,7 @@ export interface PlaySong {
 }
 
 export class Player extends EventEmitter {
-  protected queue: PlaySong[] = []
+  protected _queue: PlaySong[] = []
   protected dispatcher?: StreamDispatcher
   protected guildId: number
 
@@ -46,13 +46,13 @@ export class Player extends EventEmitter {
   skip () {
     this.dispatcher?.destroy()
 
-    if (this.queue.length > 0) {
-      this.play(this.queue.shift()!)
+    if (this._queue.length > 0) {
+      this.play(this._queue.shift()!)
     }
   }
 
   add (song: PlaySong) {
-    this.queue.push(song)
+    this._queue.push(song)
 
     if (!this.dispatcher) {
       this.skip()
@@ -67,6 +67,10 @@ export class Player extends EventEmitter {
 
   get isPlaying () {
     return !!this.dispatcher
+  }
+
+  get queue () {
+    return this._queue
   }
 }
 
