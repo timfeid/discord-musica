@@ -75,7 +75,7 @@ export class Player extends EventEmitter {
   }
 
   setVolume (volume: number) {
-    this.dispatcher?.setVolume(volume / 100)
+    this.dispatcher?.setVolumeLogarithmic(volume / 100)
   }
 
   delete (position: number) {
