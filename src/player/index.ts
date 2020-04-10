@@ -36,7 +36,7 @@ export class Player extends EventEmitter {
     const volume = (GuildService.find(this.guildId).volume) / 100
     const dispatcher = connection.play(ytdl(song.info.url), {
       filter: "audioonly",
-      // highWaterMark: 1 << 25,
+      highWaterMark: 1 << 25,
       volume,
     })
 
