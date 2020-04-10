@@ -8,6 +8,8 @@ import CommandsService from './services/commands'
 import VolumeCommand from './commands/volume'
 import SkipCommand from './commands/skip'
 import QueueCommand from './commands/queue'
+import NpCommand from './commands/np'
+import DeleteCommand from './commands/delete'
 
 const commands: typeof Command[] = [
   TestCommand,
@@ -15,6 +17,8 @@ const commands: typeof Command[] = [
   VolumeCommand,
   SkipCommand,
   QueueCommand,
+  NpCommand,
+  DeleteCommand,
 ]
 const bot = new Client()
 

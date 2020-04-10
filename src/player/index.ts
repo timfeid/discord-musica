@@ -19,6 +19,7 @@ export class Player extends EventEmitter {
   protected _queue: PlaySong[] = []
   protected dispatcher?: StreamDispatcher
   protected guildId: number
+  protected currentSong?: PlaySong
 
   constructor(guildId: number) {
     super()
@@ -28,6 +29,7 @@ export class Player extends EventEmitter {
   async play (song: PlaySong) {
     const connection = await song.voiceChannel.join()
     this.dispatcher = this.createDispatcher(connection, song)
+    this.currentSong = song
     this.setVolume(GuildService.find(this.guildId).volume)
   }
 
@@ -35,6 +37,10 @@ export class Player extends EventEmitter {
     const dispatcher = connection.play(ytdl(song.info.url))
 
     dispatcher.on('finish', () => this.skip())
+    dispatcher.on('error', e => {
+      song.textChannel.messages.send(`hmmm something happened with that one, sorry ${e.message}`)
+      this.skip()
+    })
 
     return dispatcher
   }
@@ -45,6 +51,7 @@ export class Player extends EventEmitter {
 
   skip () {
     this.dispatcher?.destroy()
+    this.currentSong = undefined
 
     if (this._queue.length > 0) {
       this.play(this._queue.shift()!)
@@ -54,7 +61,7 @@ export class Player extends EventEmitter {
   add (song: PlaySong) {
     this._queue.push(song)
 
-    if (!this.dispatcher) {
+    if (!this.currentSong) {
       this.skip()
     }
 
@@ -65,8 +72,16 @@ export class Player extends EventEmitter {
     this.dispatcher?.setVolumeLogarithmic(volume / 100)
   }
 
+  delete (position: number) {
+    this._queue.splice(position, 1)
+  }
+
   get isPlaying () {
-    return !!this.dispatcher
+    return !!this.currentSong
+  }
+
+  get currentlyPlaying () {
+    return this.currentSong
   }
 
   get queue () {
