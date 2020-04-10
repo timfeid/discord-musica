@@ -13,7 +13,7 @@ const INCREASED_REP_FOR_COUNTERING = .3
 export default class RobCommand extends CrimeCommand {
   static trigger = /^rob ([\S]+)$/
 
-  caughtChanceOutOf100 = 5
+  caughtChancePercentage = 15
   heatIncrease = 0.5
   jailTimeInMinutes = 2
 
