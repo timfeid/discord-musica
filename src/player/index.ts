@@ -34,7 +34,10 @@ export class Player extends EventEmitter {
   }
 
   createDispatcher (connection: VoiceConnection, song: PlaySong) {
-    const dispatcher = connection.play(ytdl(song.info.url))
+    const dispatcher = connection.play(ytdl(song.info.url), {
+      filter: "audioonly",
+      highWaterMark: 1 << 25
+    })
 
     dispatcher.on('finish', () => this.skip())
     dispatcher.on('error', e => {
