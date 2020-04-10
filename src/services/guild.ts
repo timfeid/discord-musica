@@ -24,9 +24,9 @@ const findUserByMention = async (guild: Guild, mention: string) => {
   }
 
   const member = members.find(method)
-  // if (member?.user.bot) {
-  //   return
-  // }
+  if (member?.user.bot) {
+    return
+  }
 
   return member
 }
