@@ -2,6 +2,7 @@ import { Command } from "../command"
 import { randomNum } from "../../services/helper"
 
 const RESET_HEAT_TO = 2
+const JAIL_LOST_REP = 10
 
 export type CrimeResponse = {
   increaseHeat?: boolean
@@ -77,15 +78,12 @@ export abstract class CrimeCommand extends Command {
     const date = new Date()
     date.setMinutes(new Date().getMinutes() + this.jailTimeInMinutes)
     this.user.outOfJailAt = date
+    this.user.reputation = this.user.reputation < JAIL_LOST_REP ? 0 : this.user.reputation - JAIL_LOST_REP
     await this.user.save()
   }
 
   sendInfo () {
-    this.message.channel.send(`your new stats \`\`\`
- rep: ${this.user.reputation.toFixed(2)}
-heat: ${this.user.heat}/100
-cash: \$${this.user.cash}
-\`\`\``)
+    this.message.channel.send(`your new stats \`\`\`\n rep: ${this.user.reputation.toFixed(2)}\nheat: ${this.user.heat}/100\ncash: \$${this.user.cash}\n\`\`\``)
   }
 
   abstract getCooldown (): false | number | Promise<false | number>

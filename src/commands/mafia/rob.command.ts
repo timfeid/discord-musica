@@ -8,8 +8,8 @@ import { CrimeCommand, CrimeResponse } from "./crime-command"
 
 const lastRobs: Record<string, Record<number, Date>> = {}
 const COOLDOWN_TIME_IN_MINUTES = 30
-const INCREASED_REP_FOR_ROBBING = .2
-const INCREASED_REP_FOR_COUNTERING = .3
+const INCREASED_REP_FOR_ROBBING = 1
+const INCREASED_REP_FOR_COUNTERING = 2
 
 export default class RobCommand extends CrimeCommand {
   static trigger = /^rob ([\S]+)$/
@@ -61,7 +61,7 @@ export default class RobCommand extends CrimeCommand {
   async updateUserBasedOnResults(winner: User, loser: User, cashFlow: number, rep: number) {
     winner.reputation += rep
     winner.cash += cashFlow
-    loser.reputation -= rep
+    loser.reputation = loser.reputation < rep ? 0 : loser.reputation - rep
     loser.cash -= cashFlow
     await Promise.all([loser.save(), winner.save()])
   }
@@ -71,7 +71,7 @@ export default class RobCommand extends CrimeCommand {
 
     const userName = this.message.author.username
 
-    if (randomNum(0, this.user.reputation) > randomNum(0, this.robee!.reputation)) {
+    if (randomNum(0, this.user.reputation + 10) > randomNum(0, this.robee!.reputation + 10)) {
       const total = randomNum(1, this.robee!.cash < 200 ? this.robee!.cash : 200)
       this.updateUserBasedOnResults(this.user, this.robee!, total, INCREASED_REP_FOR_ROBBING)
       this.message.channel.send(`ohhhh shit! ${userName} robbed \$${total} from ${robeeName}`)
