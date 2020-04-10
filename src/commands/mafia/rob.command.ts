@@ -7,7 +7,7 @@ import { User } from "../../data/entities/user"
 import { CrimeCommand, CrimeResponse } from "./crime-command"
 
 const lastRobs: Record<string, Record<number, Date>> = {}
-const COOLDOWN_TIME_IN_MINUTES = 5
+const COOLDOWN_TIME_IN_MINUTES = 30
 const INCREASED_REP_FOR_ROBBING = .2
 const INCREASED_REP_FOR_COUNTERING = .3
 
