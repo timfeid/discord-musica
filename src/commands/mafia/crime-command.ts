@@ -16,8 +16,8 @@ export abstract class CrimeCommand extends Command {
   abstract repIncrease: number
 
   async handle () {
-    await this.initCrime()
-    if (await this.isValidCrime()) {
+    await this.init()
+    if (await this.isValid()) {
       if (!this.isInJail() && !this.putInJail()) {
         const cooldown = await this.getCooldown()
         if (!cooldown) {
@@ -36,8 +36,8 @@ export abstract class CrimeCommand extends Command {
     }
   }
 
-  isValidCrime (): boolean | Promise<boolean> {return true}
-  initCrime () {}
+  isValid (): boolean | Promise<boolean> {return true}
+  init () {}
 
   saveIncreasedHeat () {
     this.user.heat += this.heatIncrease

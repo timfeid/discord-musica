@@ -22,14 +22,14 @@ export default class RobCommand extends CrimeCommand {
   robeeGuildMember?: GuildMember
   robee?: User
 
-  async initCrime () {
+  async init () {
     this.robeeGuildMember = await GuildService.findUserByMention(this.message.guild!, this.args[0])
     if (this.robeeGuildMember) {
       this.robee = await UserService.findOrCreate(this.robeeGuildMember!.user)
     }
   }
 
-  async isValidCrime () {
+  async isValid () {
     return this.robeeGuildMember !== undefined && this.robeeGuildMember!.user.id !== this.message.author.id
   }
 

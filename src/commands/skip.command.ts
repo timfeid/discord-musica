@@ -1,26 +1,23 @@
-import { Command } from './command'
-import { getCurrentPlayer } from '../player'
+import { CashCommand } from './cash-command'
+import { getCurrentPlayer, Player } from '../player'
 
-const COST = 100
-
-export default class SkipCommand extends Command {
+export default class SkipCommand extends CashCommand {
   static trigger = /^((skip)|(next))$/
 
-  async handle() {
-    const player = await getCurrentPlayer(this.guild.id)
+  cost = 420
 
-    if (player.queue.length > 0 || player.isPlaying) {
-      if (this.user.cash > COST) {
-        this.user.cash -= COST
-        await this.user.save()
-        player.skip()
-        this.message.channel.send(`that cost you \$${COST}, ${this.message.author.username}...`)
-      } else {
-        this.message.channel.send(`you dun have enuf $$$ to do that. jukebox cost \$${COST} to skip. you only gots \$${this.user.cash}`)
-      }
-    } else {
-      this.message.channel.send('got nothin in the q ??')
-    }
+  player!: Player
+  async init () {
+    this.player = await getCurrentPlayer(this.guild.id)
+  }
+
+  valid () {
+    return this.player.queue.length > 0 || this.player.isPlaying
+  }
+
+  async handleCommand() {
+    this.player.skip()
+    this.message.channel.send(`that skip cost you \$${this.cost}, ${this.message.author.username}...`)
   }
 
 }
