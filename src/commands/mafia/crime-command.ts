@@ -4,25 +4,51 @@ import { randomNum } from "../../services/helper"
 const RESET_HEAT_TO = 2
 
 export type CrimeResponse = {
-  increaseHeat: boolean
+  increaseHeat?: boolean
+  increaseRep?: boolean
+  increaseCash?: number
 }
 
 export abstract class CrimeCommand extends Command {
   abstract caughtChancePercentage: number
   abstract heatIncrease: number
   abstract jailTimeInMinutes: number
+  abstract repIncrease: number
 
   async handle () {
-    if (!this.isInJail() && !this.putInJail()) {
-      const response = await this.handleCrime()
-      response.increaseHeat && this.saveIncreasedHeat()
+    await this.initCrime()
+    if (await this.isValidCrime()) {
+      if (!this.isInJail() && !this.putInJail()) {
+        const cooldown = await this.getCooldown()
+        if (!cooldown) {
+          const response = await this.handleCrime()
+          response.increaseHeat && this.saveIncreasedHeat()
+          response.increaseRep && this.saveIncreasedRep()
+          response.increaseCash && this.saveIncreasedCash(response.increaseCash)
+          this.sendInfo()
+          this.user.save()
+        } else {
+          this.sendCooldownMessage(cooldown)
+        }
+      }
+    } else {
+      this.respondConfused()
     }
   }
 
+  isValidCrime (): boolean | Promise<boolean> {return true}
+  initCrime () {}
+
   saveIncreasedHeat () {
     this.user.heat += this.heatIncrease
-    this.user.save()
-    this.message.channel.send(`your heat is now ${this.user.heat}/100`)
+  }
+
+  saveIncreasedRep () {
+    this.user.reputation += this.repIncrease
+  }
+
+  saveIncreasedCash (cash: number) {
+    this.user.cash += cash
   }
 
   isInJail() {
@@ -53,6 +79,18 @@ export abstract class CrimeCommand extends Command {
     this.user.outOfJailAt = date
     await this.user.save()
   }
+
+  sendInfo () {
+    this.message.channel.send(`your new stats \`\`\`
+ rep: ${this.user.reputation.toFixed(2)}
+heat: ${this.user.heat}/100
+cash: \$${this.user.cash}
+\`\`\``)
+  }
+
+  abstract getCooldown (): false | number | Promise<false | number>
+
+  sendCooldownMessage (seconds: number) {}
 
   putInJail () {
     if (randomNum(1, 100) <= (this.caughtChancePercentage + this.user.heat)) {

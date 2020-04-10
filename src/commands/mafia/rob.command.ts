@@ -1,3 +1,4 @@
+import {GuildMember} from 'discord.js'
 import { Command } from "../command"
 import GuildService from '../../services/guild'
 import UserService from '../../services/user'
@@ -15,43 +16,44 @@ export default class RobCommand extends CrimeCommand {
 
   caughtChancePercentage = 15
   heatIncrease = 0.5
-  jailTimeInMinutes = 2
+  jailTimeInMinutes = 1
+  repIncrease = 0 // we are handling it below, since it varies
 
-  async handleCrime () {
-    let robeeGuildMember = await GuildService.findUserByMention(this.message.guild!, this.args[0])
-    if (robeeGuildMember && robeeGuildMember!.user.id !== this.message.author.id) {
-      const robee = await UserService.findOrCreate(robeeGuildMember.user)
-      const robeeName = robeeGuildMember.user.username
-      const cooldown = this.onCooldown(robee)
+  robeeGuildMember?: GuildMember
+  robee?: User
 
-      if (!cooldown) {
-        return await this.rob(robee, robeeName)
-      } else {
-        this.message.channel.send(`mannnn, ${robeeName} is still recovering from the last robbery. please wait ${cooldown}s`)
-      }
-    } else {
-      this.respondConfused()
+  async initCrime () {
+    this.robeeGuildMember = await GuildService.findUserByMention(this.message.guild!, this.args[0])
+    if (this.robeeGuildMember) {
+      this.robee = await UserService.findOrCreate(this.robeeGuildMember!.user)
     }
-
-    return {increaseHeat: false}
   }
 
-  onCooldown (robee: User) {
+  async isValidCrime () {
+    return this.robeeGuildMember !== undefined && this.robeeGuildMember!.user.id !== this.message.author.id
+  }
+
+  async sendCooldownMessage (cooldown: number) {
+    const robeeName = this.robeeGuildMember!.user.username
+    this.message.channel.send(`mannnn, ${robeeName} is still recovering from the last robbery. please wait ${cooldown}s`)
+  }
+
+  async getCooldown () {
     if (!lastRobs[this.user.id]) {
       lastRobs[this.user.id] = {}
     }
 
-    if (lastRobs[this.user.id] && lastRobs[this.user.id][robee.id]) {
+    if (lastRobs[this.user.id] && lastRobs[this.user.id][this.robee!.id]) {
       const timeCheck = new Date()
       const currentTime = new Date().getTime()
-      timeCheck.setTime(lastRobs[this.user.id][robee.id].getTime() + COOLDOWN_TIME_IN_MINUTES * 60000)
+      timeCheck.setTime(lastRobs[this.user.id][this.robee!.id].getTime() + COOLDOWN_TIME_IN_MINUTES * 60000)
       const checkTime = timeCheck.getTime()
       if (currentTime < checkTime) {
         return Math.ceil((checkTime - currentTime)/1000)
       }
     }
 
-    lastRobs[this.user.id][robee.id] = new Date()
+    lastRobs[this.user.id][this.robee!.id] = new Date()
 
     return false
   }
@@ -64,26 +66,27 @@ export default class RobCommand extends CrimeCommand {
     await Promise.all([loser.save(), winner.save()])
   }
 
-  async rob (robee: User, robeeName: string): Promise<CrimeResponse> {
-    let increaseHeat = false
+  async handleCrime () {
+    const robeeName = this.robeeGuildMember!.user.username
+
     const userName = this.message.author.username
 
-    if (randomNum(0, this.user.reputation) > randomNum(0, robee.reputation)) {
-      const total = randomNum(1, robee.cash < 200 ? robee.cash : 200)
-      this.updateUserBasedOnResults(this.user, robee, total, INCREASED_REP_FOR_ROBBING)
+    if (randomNum(0, this.user.reputation) > randomNum(0, this.robee!.reputation)) {
+      const total = randomNum(1, this.robee!.cash < 200 ? this.robee!.cash : 200)
+      this.updateUserBasedOnResults(this.user, this.robee!, total, INCREASED_REP_FOR_ROBBING)
       this.message.channel.send(`ohhhh shit! ${userName} robbed \$${total} from ${robeeName}`)
-      increaseHeat = true
+      return {increaseHeat: true}
 
     } else if (randomNum(1,3) === 3) {
       const total = randomNum(1, this.user.cash < 200 ? this.user.cash : 200)
-      this.updateUserBasedOnResults(robee, this.user, total, INCREASED_REP_FOR_COUNTERING)
+      this.updateUserBasedOnResults(this.robee!, this.user, total, INCREASED_REP_FOR_COUNTERING)
       this.message.channel.send(`rippppp ${userName} tried to rob ${robeeName}, but ${robeeName} ended up robbing ${userName} for \$${total} instead`)
 
     } else {
       this.message.channel.send(`mannn, ${robeeName} just bitch slapped ${userName}. you aint take shit`)
     }
 
-
-    return {increaseHeat}
+    return {}
   }
+
 }
