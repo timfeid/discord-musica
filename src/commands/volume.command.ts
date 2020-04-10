@@ -18,7 +18,7 @@ export default class VolumeCommand extends CashCommand {
   }
 
   async handleCommand() {
-    this.message.channel.send(`volume set to ${this.volume}, my dud. that skip cost you \$${this.cost}`)
+    this.message.channel.send(`volume set to ${this.volume}, my dud. that cost you \$${this.cost}`)
 
     this.guild.volume = this.volume
     await this.guild.save()

@@ -103,7 +103,7 @@ cash: \$${this.user.cash}
   }
 
   jailMessage () {
-    this.message.channel.send(`:police_officer: ah shit the police!! you were caught trying doin crime, therefore, you gotta do the time! you in jail for ${this.jailTimeInMinutes} minutes`)
+    this.message.channel.send(`:police_officer: ah shit the police!! you were caught doin da crime, therefore, you doin da time! you in jail for ${this.jailTimeInMinutes} minutes`)
   }
 
   abstract handleCrime (): CrimeResponse | Promise<CrimeResponse>
