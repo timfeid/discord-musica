@@ -13,4 +13,7 @@ export class User extends BaseEntity {
 
   @Column({ default: 0, type: 'float' })
   heat!: number
+
+  @Column({ nullable: true, type: 'datetime' })
+  outOfJailAt!: Date | null
 }

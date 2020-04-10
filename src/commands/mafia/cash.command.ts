@@ -11,7 +11,7 @@ export default class CashCommand extends Command {
         const mydude = await UserService.findOrCreate(user.user)
         this.message.channel.send(`${user.user.username} has \$${mydude.cash}`)
       } else {
-        this.responseConfused()
+        this.respondConfused()
       }
     } else {
       this.message.channel.send(`you, ${this.message.author.username}, have \$${this.user.cash}`)
