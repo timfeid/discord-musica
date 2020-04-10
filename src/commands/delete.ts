@@ -11,9 +11,12 @@ export default class DeleteCommand extends Command {
   async handle() {
     const player = await getCurrentPlayer(this.guild.id)
     const position = parseInt(this.args[0], 10) - 1
-    if (player.queue.length > position && position >= 0) {
-      player.delete(position)
+    if (player.queue.length < position) {
+      this.message.channel.send(`idk wtf you're trying to do, eloff.`)
+
+      return
     }
-    this.message.channel.send(player.currentlyPlaying ? player.currentlyPlaying.info.title : 'nothing is playin...??')
+    this.message.channel.send(`deleted ${player.queue[position].info.title}`)
+    player.delete(position)
   }
 }
