@@ -2,25 +2,23 @@ import './config'
 import { Client } from 'discord.js'
 import GuildService from './services/guild'
 import { Command } from './commands/command'
-import TestCommand from './commands/test'
-import PlayCommand from './commands/play'
 import CommandsService from './services/commands'
-import VolumeCommand from './commands/volume'
-import SkipCommand from './commands/skip'
-import QueueCommand from './commands/queue'
-import NpCommand from './commands/np'
-import DeleteCommand from './commands/delete'
+import path from 'path'
+import glob from 'glob'
 
-const commands: typeof Command[] = [
-  TestCommand,
-  PlayCommand,
-  VolumeCommand,
-  SkipCommand,
-  QueueCommand,
-  NpCommand,
-  DeleteCommand,
-]
+const commands: typeof Command[] = []
 const bot = new Client()
+const commandsGlob = path.join(__dirname, 'commands')+'/**/*.command.ts'
+
+glob(commandsGlob, (e, matches) => {
+  for (const match of matches) {
+    const command = require(match).default
+
+    if (command.prototype instanceof Command) {
+      commands.push(command)
+    }
+  }
+})
 
 bot.once('ready', async () => {
   bot.guilds.cache.forEach(async guild => {
