@@ -31,7 +31,7 @@ export class Player extends EventEmitter {
     this.dispatcher = this.createDispatcher(connection, song)
     this.currentSong = song
 
-    this.setVolume((GuildService.find(this.guildId).volume) / 100)
+    this.setVolume((GuildService.find(this.guildId).volume))
   }
 
   createDispatcher (connection: VoiceConnection, song: PlaySong) {
