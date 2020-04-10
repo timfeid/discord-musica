@@ -6,7 +6,11 @@ export default class NpCommand extends Command {
 
   async handle() {
     const player = await getCurrentPlayer(this.guild.id)
-    this.message.channel.send(player.currentlyPlaying ? player.currentlyPlaying.info.title : 'nothing is playin...??')
+    if (!player.currentlyPlaying) {
+      this.respondConfused()
+    }
+
+    this.message.channel.send(player.currentlyPlaying!.info.title)
   }
 
 }

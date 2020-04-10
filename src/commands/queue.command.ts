@@ -7,9 +7,7 @@ export default class QueueCommand extends Command {
   async handle() {
     const player = await getCurrentPlayer(this.guild.id)
     if (player.queue.length === 0) {
-      this.message.channel.send('eloff... stop trying to break shit. nothing in dat q')
-
-      return
+      return this.respondConfused('nothing in dat q')
     }
     this.message.channel.send(player.queue.map((queue, i) => `${i+1}. ${queue.info.title}`).join('\n'))
   }

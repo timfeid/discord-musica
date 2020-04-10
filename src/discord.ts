@@ -1,6 +1,7 @@
 import './config'
-import { Client } from 'discord.js'
+import { Client, User } from 'discord.js'
 import GuildService from './services/guild'
+import UserService from './services/user'
 import { Command } from './commands/command'
 import CommandsService from './services/commands'
 import path from 'path'
@@ -34,8 +35,14 @@ bot.on('message', async message => {
   for (const command of commands) {
     if (await CommandsService.applysTo(command, message) && message.guild) {
       const guild = await GuildService.findOrCreate(message.guild)
+      const user = await UserService.findOrCreate(message.author)
       // @ts-ignore
-      let handler = new command(guild, message, command.trigger)
+      let handler = new command({
+        guild,
+        message,
+        trigger: command.trigger,
+        user,
+      })
       await handler.handle()
     }
   }

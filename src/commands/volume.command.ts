@@ -9,8 +9,7 @@ export default class VolumeCommand extends Command {
   async handle() {
     let volume = parseInt(this.args[this.args.length === 2 ? 1 : 0], 10)
     if (volume === NaN) {
-      this.message.channel.send('mannn what u doin. enter a number between 0 and 100, ty')
-      return
+      return this.respondConfused('enter a number between 0 and 100, ty')
     }
     this.message.channel.send(`volume set to ${volume}, my dud`)
 
