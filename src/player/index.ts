@@ -41,7 +41,8 @@ export class Player extends EventEmitter {
 
     dispatcher.on('finish', () => this.skip())
     dispatcher.on('error', e => {
-      song.textChannel.messages.send(`hmmm something happened with that one, sorry ${e.message}`)
+
+      song.textChannel.send(`hmmm something happened with that one, sorry ${e.message}`)
       this.skip()
     })
 
