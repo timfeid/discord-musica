@@ -30,16 +30,15 @@ export class Player extends EventEmitter {
     const connection = await song.voiceChannel.join()
     this.dispatcher = this.createDispatcher(connection, song)
     this.currentSong = song
+
+    this.setVolume((GuildService.find(this.guildId).volume) / 100)
   }
 
   createDispatcher (connection: VoiceConnection, song: PlaySong) {
-    const volume = (GuildService.find(this.guildId).volume) / 100
     const dispatcher = connection.play(ytdl(song.info.url, {
       filter: 'audioonly',
       highWaterMark: 1 << 25,
-    }), {
-      volume,
-    })
+    }))
 
     dispatcher.on('finish', () => this.skip())
     dispatcher.on('error', e => {
