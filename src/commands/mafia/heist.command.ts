@@ -23,7 +23,7 @@ const getCurrentHeist = (id: string) => {
 export default class HeistCommand extends CrimeCommand {
   static trigger = /^heist\s?(.*?)$/
 
-  caughtChancePercentage = 5
+  caughtChancePercentage = 60
   heatIncrease = 25
   jailTimeInMinutes = 10
   repIncrease = 7
