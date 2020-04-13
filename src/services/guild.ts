@@ -18,7 +18,7 @@ const findOrCreate = async (guild: Guild) => {
 
 const findUserByMention = async (guild: Guild, mention: string) => {
   const members = await guild.members.fetch()
-  let method = (member: GuildMember) => member.user.username === mention
+  let method = (member: GuildMember) => member.user.username.toLowerCase() === mention.toLowerCase()
   if (mention.startsWith('<@!')) {
     method = (member: GuildMember) => member.id === mention.substr(3, mention.length-4)
   }
