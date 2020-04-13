@@ -11,10 +11,10 @@ const COOLDOWN_TIME_IN_MINUTES = 1440
 export default class RobBankCommand extends CrimeCommand {
   static trigger = /^bankrob$/
 
-  caughtChancePercentage = 80
+  caughtChancePercentage = 85
   heatIncrease = 50
   jailTimeInMinutes = 10
-  repIncrease = 30
+  repIncrease = 5
 
   async handleCrime () {
     const total = randomNum(5000, 15000)
