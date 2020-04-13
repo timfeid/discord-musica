@@ -1,5 +1,6 @@
 import { Command } from "../command"
 import { randomNum, sendStats } from "../../services/helper"
+import { User } from "../../data/entities/user"
 
 const RESET_HEAT_TO = 1
 const JAIL_LOST_REP = 10
@@ -17,30 +18,31 @@ export abstract class CrimeCommand extends Command {
   abstract repIncrease: number
 
   async handle () {
-    await this.init()
-    if (await this.isValid()) {
-      if (!this.isInJail()) {
-        const cooldown = await this.getCooldown()
-        if (!cooldown) {
-           if(!this.putInJail()) {
-            const response = await this.handleCrime()
-            response.increaseHeat && this.saveIncreasedHeat()
-            response.increaseRep && this.saveIncreasedRep()
-            response.increaseCash && this.saveIncreasedCash(response.increaseCash)
-            this.sendInfo()
-            this.user.save()
+    if ((await this.init()) !== false) {
+      if (await this.isValid()) {
+        if (!this.isInJail()) {
+          const cooldown = await this.getCooldown()
+          if (!cooldown) {
+            if(!this.putInJail()) {
+              const response = await this.handleCrime()
+              response.increaseHeat && this.saveIncreasedHeat()
+              response.increaseRep && this.saveIncreasedRep()
+              response.increaseCash && this.saveIncreasedCash(response.increaseCash)
+              this.sendInfo()
+              this.user.save()
+            }
+          } else {
+            this.sendCooldownMessage(cooldown)
           }
-        } else {
-          this.sendCooldownMessage(cooldown)
         }
+      } else {
+        this.respondConfused()
       }
-    } else {
-      this.respondConfused()
     }
   }
 
   isValid (): boolean | Promise<boolean> {return true}
-  init () {}
+  init (): boolean | void | Promise<boolean | void> {}
 
   saveIncreasedHeat () {
     this.user.heat += this.heatIncrease
@@ -76,12 +78,13 @@ export abstract class CrimeCommand extends Command {
     await this.user.save()
   }
 
-  async addSentence () {
+  async addSentence (user?: User) {
+    const u = user ? user : this.user
     const date = new Date()
     date.setMinutes(new Date().getMinutes() + this.jailTimeInMinutes)
-    this.user.outOfJailAt = date
-    this.user.reputation = this.user.reputation < JAIL_LOST_REP ? 0 : this.user.reputation - JAIL_LOST_REP
-    await this.user.save()
+    u.outOfJailAt = date
+    u.reputation = u.reputation < JAIL_LOST_REP ? 0 : u.reputation - JAIL_LOST_REP
+    await u.save()
   }
 
   sendInfo () {

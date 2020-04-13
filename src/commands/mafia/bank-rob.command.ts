@@ -1,9 +1,5 @@
-import { Command } from "../command"
-import GuildService from '../../services/guild'
-import UserService from '../../services/user'
 import { randomNum } from "../../services/helper"
-import { User } from "../../data/entities/user"
-import { CrimeCommand, CrimeResponse } from "./crime-command"
+import { CrimeCommand } from "./crime-command"
 
 const lastRobs: Record<string, Date> = {}
 const COOLDOWN_TIME_IN_MINUTES = 1440
@@ -12,7 +8,7 @@ export default class RobBankCommand extends CrimeCommand {
   static trigger = /^bankrob$/
 
   caughtChancePercentage = 85
-  heatIncrease = 50
+  heatIncrease = 25
   jailTimeInMinutes = 10
   repIncrease = 5
 
