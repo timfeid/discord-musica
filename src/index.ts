@@ -6,7 +6,7 @@ import { User } from './data/entities/user'
 
 const decreaseHeat = async () => {
   console.log('decreasing heats')
-  await getConnection().query('update user set heat = case when heat-3 > 0 then heat = heat-3 else heat = 0 end')
+  await getConnection().query('update user set heat = case when heat-3 > 0 then heat-3 else heat = 0 end')
 }
 
 createConnection({
