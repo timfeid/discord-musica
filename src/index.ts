@@ -6,7 +6,7 @@ import { User } from './data/entities/user'
 
 const decreaseHeat = async () => {
   console.log('decreasing heats')
-  await getConnection().query('update user set heat = case when heat-10 > 0 then heat = heat-10 else heat = 0 end')
+  await getConnection().query('update user set heat = case when heat-3 > 0 then heat = heat-3 else heat = 0 end')
 }
 
 createConnection({
@@ -18,5 +18,5 @@ createConnection({
   ],
 }).then(() => {
   bot.login(process.env.DISCORD_TOKEN)
-  setTimeout(decreaseHeat, 3600000)
+  setTimeout(decreaseHeat, 300000)
 })
