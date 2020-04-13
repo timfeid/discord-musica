@@ -1,7 +1,13 @@
-import { createConnection } from 'typeorm'
+import { createConnection, getConnection } from 'typeorm'
 import { bot } from './discord'
 import config from './config'
 import {resolve} from 'path'
+import { User } from './data/entities/user'
+
+const decreaseHeat = async () => {
+  console.log('decreasing heats')
+  await getConnection().query('update user set heat = case when heat-10 > 0 then heat = heat-10 else heat = 0 end')
+}
 
 createConnection({
   type: 'sqlite',
@@ -12,4 +18,5 @@ createConnection({
   ],
 }).then(() => {
   bot.login(process.env.DISCORD_TOKEN)
+  setTimeout(decreaseHeat, 3600000)
 })
