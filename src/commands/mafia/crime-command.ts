@@ -1,7 +1,7 @@
 import { Command } from "../command"
 import { randomNum } from "../../services/helper"
 
-const RESET_HEAT_TO = 2
+const RESET_HEAT_TO = 1
 const JAIL_LOST_REP = 10
 
 export type CrimeResponse = {
@@ -19,15 +19,17 @@ export abstract class CrimeCommand extends Command {
   async handle () {
     await this.init()
     if (await this.isValid()) {
-      if (!this.isInJail() && !this.putInJail()) {
+      if (!this.isInJail()) {
         const cooldown = await this.getCooldown()
         if (!cooldown) {
-          const response = await this.handleCrime()
-          response.increaseHeat && this.saveIncreasedHeat()
-          response.increaseRep && this.saveIncreasedRep()
-          response.increaseCash && this.saveIncreasedCash(response.increaseCash)
-          this.sendInfo()
-          this.user.save()
+           if(!this.putInJail()) {
+            const response = await this.handleCrime()
+            response.increaseHeat && this.saveIncreasedHeat()
+            response.increaseRep && this.saveIncreasedRep()
+            response.increaseCash && this.saveIncreasedCash(response.increaseCash)
+            this.sendInfo()
+            this.user.save()
+          }
         } else {
           this.sendCooldownMessage(cooldown)
         }

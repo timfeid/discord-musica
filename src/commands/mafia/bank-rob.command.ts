@@ -11,13 +11,13 @@ const COOLDOWN_TIME_IN_MINUTES = 1440
 export default class RobBankCommand extends CrimeCommand {
   static trigger = /^bankrob$/
 
-  caughtChancePercentage = 90
+  caughtChancePercentage = 80
   heatIncrease = 50
-  jailTimeInMinutes = 3
-  repIncrease = 10
+  jailTimeInMinutes = 10
+  repIncrease = 30
 
   async handleCrime () {
-    const total = randomNum(1000, 10000)
+    const total = randomNum(5000, 15000)
     this.message.channel.send(`ohhhh shit! ${this.message.author.username} robbed \$${total} from the bank!!`)
     return {
       increaseHeat: true,
