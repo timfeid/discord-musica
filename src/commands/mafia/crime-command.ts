@@ -93,7 +93,7 @@ export abstract class CrimeCommand extends Command {
   sendCooldownMessage (seconds: number) {}
 
   putInJail () {
-    if (randomNum(1, 100) <= (this.caughtChancePercentage + this.user.heat)) {
+    if (randomNum(1, 100) <= (this.caughtChancePercentage - this.user.reputation + this.user.heat)) {
       this.addSentence()
       this.jailMessage()
       return true
