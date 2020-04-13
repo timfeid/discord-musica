@@ -1,5 +1,5 @@
 import { Command } from "../command"
-import { randomNum } from "../../services/helper"
+import { randomNum, sendStats } from "../../services/helper"
 
 const RESET_HEAT_TO = 1
 const JAIL_LOST_REP = 10
@@ -85,7 +85,7 @@ export abstract class CrimeCommand extends Command {
   }
 
   sendInfo () {
-    this.message.channel.send(`your new stats \`\`\`\n rep: ${this.user.reputation.toFixed(2)}\nheat: ${this.user.heat}/100\ncash: \$${this.user.cash}\n\`\`\``)
+    sendStats(this.message.channel, this.message.author, this.user)
   }
 
   abstract getCooldown (): false | number | Promise<false | number>
