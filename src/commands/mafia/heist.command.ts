@@ -23,7 +23,7 @@ const getCurrentHeist = (id: string) => {
 export default class HeistCommand extends CrimeCommand {
   static trigger = /^heist\s?(.*?)$/
 
-  caughtChancePercentage = 60
+  caughtChancePercentage = 85
   heatIncrease = 25
   jailTimeInMinutes = 10
   repIncrease = 7
@@ -32,7 +32,7 @@ export default class HeistCommand extends CrimeCommand {
   heistTotalPeople!: number
 
   async init () {
-    const cooldown = await this.getHeistCooldown()
+    const cooldown = await this.getCooldown()
     if (cooldown) {
       return
     }
@@ -105,6 +105,10 @@ export default class HeistCommand extends CrimeCommand {
       return true
     }
 
+    if (this.getCooldown()) {
+      return true
+    }
+
     return false
   }
 
@@ -113,17 +117,14 @@ export default class HeistCommand extends CrimeCommand {
   async handleCrime () {
     const total = randomNum(5000, 15000)
     this.message.channel.send(`ohhhh shit! ${this.currentHeist!.users.map(u => u.username).join(', ')} robbed \$${total * this.heistTotalPeople} from the bank!!`)
-    // return {
-    //   increaseHeat: true,
-    //   increaseRep: true,
-    //   increaseCash: total,
-    // }
 
     this.currentHeist!.players.forEach(player => {
       player.cash += total
       player.reputation += this.repIncrease
       player.heat += this.heatIncrease
       player.save()
+
+      lastRobs[player.id] = new Date()
     })
 
     return {}
@@ -133,7 +134,7 @@ export default class HeistCommand extends CrimeCommand {
     this.message.channel.send(`${this.message.author.username} you should chill the fuck out. please wait ${cooldown}s`)
   }
 
-  getHeistCooldown () {
+  getCooldown () {
     if (lastRobs[this.user.id]) {
       const timeCheck = new Date()
       const currentTime = new Date().getTime()
@@ -143,13 +144,6 @@ export default class HeistCommand extends CrimeCommand {
         return Math.ceil((checkTime - currentTime)/1000)
       }
     }
-
-
-    return false
-  }
-
-  getCooldown (): false {
-    lastRobs[this.user.id] = new Date()
 
     return false
   }
