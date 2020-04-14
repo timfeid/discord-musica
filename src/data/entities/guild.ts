@@ -8,7 +8,7 @@ export class Guild extends BaseEntity {
   @Column()
   name!: string
 
-  @Column({default: '-'})
+  @Column({default: '.'})
   prefix!: string
 
   @Column({default: 25})

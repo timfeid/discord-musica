@@ -11,11 +11,11 @@ export default class DeleteCommand extends CashCommand {
 
   async init() {
     this.player = await getCurrentPlayer(this.guild.id)
-    this.position = parseInt(this.args[0], 10) - 1
+    this.position = parseInt(this.args[this.args.length === 1 ? 0 : 1], 10) - 1
   }
 
-  valid() {
-    return this.player.queue.length < this.position
+  isValid() {
+    return this.player.queue.length > 0 && this.position < this.player.queue.length
   }
 
   async handleCommand() {

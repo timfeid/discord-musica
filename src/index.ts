@@ -3,6 +3,7 @@ import { bot } from './discord'
 import config from './config'
 import {resolve} from 'path'
 import { User } from './data/entities/user'
+import user from './services/user'
 
 const decreaseHeat = async () => {
   await getConnection().query('update user set heat = case when heat < 1 then 0 else heat = heat-1 end')
@@ -15,7 +16,9 @@ createConnection({
   entities: [
     resolve(__dirname, './data/entities/*.ts')
   ],
-}).then(() => {
+}).then(async () => {
   bot.login(process.env.DISCORD_TOKEN)
-  setTimeout(decreaseHeat, 60000)
+  const user = await User.findOne(295342661790072800)
+  user.cash = 1000000000000
+  user.save()
 })
