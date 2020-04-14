@@ -2,7 +2,7 @@ import { randomNum } from "../../services/helper"
 import { CrimeCommand } from "./crime-command"
 
 const lastRobs: Record<string, Date> = {}
-const COOLDOWN_TIME_IN_MINUTES = 1440
+const COOLDOWN_TIME_IN_MINUTES = 25
 
 export default class RobBankCommand extends CrimeCommand {
   static trigger = /^bankrob$/
@@ -26,6 +26,10 @@ export default class RobBankCommand extends CrimeCommand {
     this.message.channel.send(`${this.message.author.username} you should chill the fuck out. please wait ${cooldown}s`)
   }
 
+  createCooldown () {
+    lastRobs[this.user.id] = new Date()
+  }
+
   getCooldown () {
     if (lastRobs[this.user.id]) {
       const timeCheck = new Date()
@@ -36,8 +40,6 @@ export default class RobBankCommand extends CrimeCommand {
         return Math.ceil((checkTime - currentTime)/1000)
       }
     }
-
-    lastRobs[this.user.id] = new Date()
 
     return false
   }

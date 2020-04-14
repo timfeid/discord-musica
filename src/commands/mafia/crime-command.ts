@@ -30,6 +30,7 @@ export abstract class CrimeCommand extends Command {
               response.increaseCash && this.saveIncreasedCash(response.increaseCash)
               this.sendInfo()
               this.user.save()
+              this.createCooldown()
             }
           } else {
             this.sendCooldownMessage(cooldown)
@@ -94,6 +95,8 @@ export abstract class CrimeCommand extends Command {
   abstract getCooldown (): false | number | Promise<false | number>
 
   sendCooldownMessage (seconds: number) {}
+  createCooldown () {
+  }
 
   putInJail () {
     if (randomNum(1, 100) <= (this.caughtChancePercentage - this.user.reputation + this.user.heat)) {
