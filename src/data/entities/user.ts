@@ -1,4 +1,5 @@
-import {Entity, Column, PrimaryColumn, BaseEntity} from 'typeorm';
+import {Entity, Column, PrimaryColumn, BaseEntity, ManyToMany, JoinTable, OneToOne, RelationId, JoinColumn, OneToMany, ManyToOne} from 'typeorm';
+import { City } from './city';
 
 @Entity()
 export class User extends BaseEntity {
@@ -16,4 +17,7 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true, type: 'datetime' })
   outOfJailAt!: Date | null
+
+  @ManyToOne(() => City, {eager: true})
+  currentCity!: City
 }

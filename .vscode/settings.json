@@ -15,4 +15,12 @@
     "**/vendor": true
   },
   "svg.preview.background": "white",
+  "sqltools.connections": [
+    {
+      "database": "${workspaceFolder}/data/database.sqlite",
+      "dialect": "SQLite",
+      "name": "discord-musica"
+    }
+  ],
+  "sqltools.useNodeRuntime": true,
 }
