@@ -28,7 +28,7 @@ export default class CharacterCommand extends Command {
       this.message.channel.send(`\`\`\`${message}\`\`\``)
 
     } else {
-      this.message.channel.send(`you, ${this.message.author.username}, are currently a ${this.user.currentCity.name}`)
+      this.message.channel.send(`you, ${this.message.author.username}, are in ${this.user.currentCity.name}`)
     }
   }
 }
