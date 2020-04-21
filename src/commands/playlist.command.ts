@@ -3,7 +3,7 @@ import { Guild } from "../data/entities/guild"
 import { Message, User, StreamDispatcher, Channel, VoiceChannel, TextChannel } from "discord.js"
 import ytdl from 'ytdl-core'
 import {SongInfo, getCurrentPlayer} from '../player'
-import playlist from "../services/search"
+import {playlist} from "../services/search"
 
 export default class PlayCommand extends Command {
   static trigger = /^playlist (.*)$/

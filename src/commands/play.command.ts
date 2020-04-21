@@ -3,7 +3,7 @@ import { Guild } from "../data/entities/guild"
 import { Message, User, StreamDispatcher, Channel, VoiceChannel, TextChannel } from "discord.js"
 import ytdl from 'ytdl-core'
 import {SongInfo, getCurrentPlayer} from '../player'
-import search from "../services/search"
+import {search} from "../services/search"
 
 export default class PlayCommand extends Command {
   static trigger = /^play (.*)$/
@@ -20,8 +20,8 @@ export default class PlayCommand extends Command {
       } else {
         const results = await search(this.args[0])
         info = {
-          url: results[0].url,
-          title: results[0].title,
+          url: results.results[0].url,
+          title: results.results[0].title,
         }
       }
     } catch (e) {
