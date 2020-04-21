@@ -15,9 +15,10 @@
     "discord.js": "^12.1.1",
     "dotenv": "^8.2.0",
     "glob": "^7.1.6",
-    "popyt": "^3.0.0",
+    "popyt": "^3.1.0",
     "sqlite3": "^4.1.1",
     "typeorm": "^0.2.24",
+    "yt-search": "^1.1.2",
     "ytdl-core": "^2.0.1"
   }
 }

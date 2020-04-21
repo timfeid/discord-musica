@@ -20,10 +20,16 @@ export default class PlayCommand extends Command {
       } else {
         const results = await search(this.args[0])
         info = {
-          url: results.results[0].url,
-          title: results.results[0].title,
+          url: results[0].url,
+          title: results[0].title,
         }
       }
+    } catch (e) {
+      console.log(e, 'part 1')
+      return
+    }
+
+    try {
       const player = await getCurrentPlayer(this.guild.id)
       player.once('added', () => {
         this.message.channel.send(player.isPlaying ? `added ${info.title} to the queue` : `playing ${info.title}`)
@@ -33,7 +39,7 @@ export default class PlayCommand extends Command {
         info,
       })
     } catch (e) {
-      this.message.channel.send(e.message)
+      this.message.channel.send(e.message || 'somethin went wrong man')
     }
   }
 
