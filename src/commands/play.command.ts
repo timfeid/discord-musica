@@ -13,8 +13,8 @@ export default class PlayCommand extends Command {
       return
     }
 
+    let info: SongInfo
     try {
-      let info: SongInfo
       if (this.args[0].startsWith('http') || (/^[A-Za-z0-9_-]{11}$/).test(this.args[0])) {
         info = await this.getSong(this.args[0])
       } else {
@@ -45,6 +45,7 @@ export default class PlayCommand extends Command {
 
   async getSong (url: string): Promise<SongInfo> {
     const songInfo = await ytdl.getInfo(url)
+    console.log(songInfo)
     return {
       title: songInfo.title,
       url: songInfo.video_url,
